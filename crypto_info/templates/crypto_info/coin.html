@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Coin Price{% endblock %}
+{% block content %}
+
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="utf-8" />
+</head>
+
+<body>
+    <h1>Coin Price</h1>
+    <br>
+
+    <div id="main">
+        {% for coin in coin %}
+        <h5>{{coin.symbol}} : {{coin.price}}</h5>
+        {% endfor %}
+    </div>
+    <br>
+
+    <h3>From</h3>
+    <select id="coin-1" class="form-control">
+        {% for coin in coin %}<option>{{coin.symbol}}</option>{% endfor %}
+    </select>
+    <h3>To</h3>
+    <select id="coin-2" class="form-control">
+        {% for coin in coin %}<option>{{coin.symbol}}</option>{% endfor %}
+    </select>
+    <br>
+
+    <button id="coin-convert" type="button" class="btn btn-secondary btn-lg btn-block">Convert</button>
+    <br>
+
+    <input id="convert-result" class="form-control" type="text" placeholder="Result">
+    <br>
+
+
+
+    <script type="text/javascript">
+        //if window.location.protocol == https >wss  if not >ws
+        const wss_protocol =
+            window.location.protocol == 'https:' ? 'wss://' : 'ws://'
+
+        //  >wss://window.location.host/ws/socket-server
+        const coinSocket = new WebSocket(
+            wss_protocol + window.location.host + '/ws/price'
+        )
+
+        coinSocket.onmessage = function (event) {
+            var coin_data = JSON.parse(event.data)
+            var listLength = coin_data.length
+            //for (var i = 0; i < listLength; i++) {
+            //  	data_by_django = document.getElementById("price_" + i); //select the  element
+            //	data_by_django.textContent = data[i]['symbol'];
+            //}
+            var coin_price = document.getElementById('main')
+            coin_price.textContent = ''
+            var coin = ''
+            for (var i = 0; i < listLength; i++) {
+                coin +=
+                    '<h5>' +
+                    coin_data[i]['symbol'] +
+                    ' : ' +
+                    coin_data[i]['price'] +
+                    '</h5>'
+            }
+            coin_price.innerHTML = coin
+        }
+
+        document.querySelector("#coin-convert").onclick = function (e) {
+            const coin_1_symbol = document.querySelector("#coin-1").value;
+            const coin_2_symbol = document.querySelector("#coin-2").value;
+            console.log(coin_1_symbol)
+            console.log(coin_2_symbol)
+
+            coinSocket.send(
+                p = JSON.stringify({
+                    message: [coin_1_symbol, coin_2_symbol]
+
+
+                })
+            );
+            console.log(p)
+
+            coin_1_symbol.value = "";
+            coin_2_symbol.value = "";
+        }
+    </script>
+</body>
+
+</html>
+{% endblock %}

@@ -1,0 +1,57 @@
+{% extends "base.html" %} 
+{% block title %}Crypto News{% endblock %}
+{% block content %}
+<html>
+    <head>
+        <meta charset="utf-8" />
+    </head>
+
+    <body>
+        <h1>Crypto News</h1>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col" id="img"></th>
+                    <th scope="col" id="title">Title</th>
+                    <th scope="col" id="post_time">Post Time</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for news in news %}
+                <tr>
+                    <th scope="row" class="align-middle">{{ news.id }}</th>
+                    <td>
+                        <a href="{{news.news_url}}"></a>
+                            <img
+                                src="{{news.img_url}}"
+                                href="{{news.url}}"
+                                class="align-middle"
+                                width="180"
+                            />
+                        </a>
+                    </td>
+                    <td class="align-middle">
+                        <a href="{{news.news_url}}">{{news.title}}</a>
+                    </td>
+                    <td class="align-middle">{{news.post_time}}</td>
+                </tr>
+
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <script type="text/javascript">
+            //if window.location.protocol == https >wss  if not >ws
+            const wss_protocol =
+                window.location.protocol == "https:" ? "wss://" : "ws://";
+
+            //  >wss://window.location.host/ws/socket-server
+            const coinSocket = new WebSocket(
+                wss_protocol + window.location.host + "/ws/price"
+            );
+        </script>
+    </body>
+</html>
+{% endblock %}

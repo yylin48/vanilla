@@ -33,6 +33,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -44,17 +45,32 @@ INSTALLED_APPS = [
 
 START_APPS = [
     'account',
+    'gpumining',
+    'crypto_info',
 ]
 INSTALLED_APPS += START_APPS
 
 
 THIRD_PARTY_APPS = [
+    
     'oauth2_provider',
     'django_extensions',
     'rest_framework',
 ]
 INSTALLED_APPS += THIRD_PARTY_APPS
 
+ASGI_APPLICATION = 'vanilla.asgi.application'
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND' : 'channels_redis.core.RedisChannelLayer',
+        'CONFIG' : {
+            'hosts' : [('vanilla-redis', 6379)]
+        }
+    }
+}
+
+CELERY_BROKER_URL = 'redis://vanilla-redis:6379'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -71,7 +87,7 @@ ROOT_URLCONF = 'vanilla.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -149,7 +165,7 @@ USE_TZ = True
 STATIC_ROOT = '/static/'
 STATIC_URL = os.environ.get('STATIC_URL', '/static/')
 MEDIA_ROOT = os.path.join(BASE_DIR, 'upload')
-MEDIA_URL = '/upload/'
+MEDIA_URL = '/upload/' 
 
 
 # Default primary key field type
